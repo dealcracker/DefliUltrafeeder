@@ -166,7 +166,7 @@ sed -i "s|$original_line4|$new_line4|g" ".env"
 sed -i "s|$original_line5|$new_line5|g" ".env"
 
 #start the container
-docker-compose up -d ultrafeeder
+docker compose up -d ultrafeeder
 
 #create grafana container
 cd /
