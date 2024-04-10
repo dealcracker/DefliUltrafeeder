@@ -121,6 +121,7 @@ docker stop grafana
 docker rm ultrafeeder
 docker rm prometheus
 docker rm grafana
+docker container prune -f
 rm -fr /opt
 
 #new opt directory
@@ -159,11 +160,11 @@ sed -i "s|$original_line3|$new_line3|g" "docker-compose.yml"
 sed -i "s|$original_line4|$new_line4|g" "docker-compose.yml"
 sed -i "s|$original_line5|$new_line5|g" "docker-compose.yml"
 
-sed -i "s|$original_line1|$new_line1|g" ".etc"
-sed -i "s|$original_line2|$new_line2|g" ".etc"
-sed -i "s|$original_line3|$new_line3|g" ".etc"
-sed -i "s|$original_line4|$new_line4|g" ".etc"
-sed -i "s|$original_line5|$new_line5|g" ".etc"
+sed -i "s|$original_line1|$new_line1|g" ".env"
+sed -i "s|$original_line2|$new_line2|g" ".env"
+sed -i "s|$original_line3|$new_line3|g" ".env"
+sed -i "s|$original_line4|$new_line4|g" ".env"
+sed -i "s|$original_line5|$new_line5|g" ".env"
 
 #start the container
 docker-compose up -d --remove-orphans ultrafeeder
