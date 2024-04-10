@@ -151,8 +151,8 @@ new_line3=$timeZone
 original_line4="GS_BUCKET"
 new_line4=$bucket
 
-original_line4="GS_ELEVATION"
-new_line4=$elevation
+original_line5="GS_ELEVATION"
+new_line5=$elevation
 
 sed -i "s|$original_line1|$new_line1|g" "docker-compose.yml"
 sed -i "s|$original_line2|$new_line2|g" "docker-compose.yml"
