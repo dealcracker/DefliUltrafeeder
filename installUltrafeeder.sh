@@ -114,8 +114,12 @@ apt-get -qq update -y
 echo ""
 echo "Intalling Ultrafeeder..."
 
-mkdir -p -m 777 /opt/adsb
+#clean up any previous dockers
+docker rm ultrafeeder
+rm -fr /opt
 
+#new opt directory
+mkdir -p -m 777 /opt/adsb
 cd /opt/adsb
 
 #get the default docker compose file
