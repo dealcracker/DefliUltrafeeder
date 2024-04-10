@@ -1,5 +1,5 @@
 #!/bin/bash
-# install the Defli InfluxDB connector
+# install the Defli Ultrafeeder
 # Copyright (c) 2024 dealcracker
 #
 
