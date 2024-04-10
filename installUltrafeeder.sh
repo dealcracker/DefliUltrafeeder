@@ -37,24 +37,24 @@ rm -fr $current_dir/.node-red > /dev/null 2>&1
 
 
 #Prompt user for the Ground Station information
-# echo "Find your time zone (Country/Region) on this website: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
-# read -p "Time Zone (ie America/New_York):  " timeZone
-# echo
-# echo "Enter the geogrphical coordinates (decimal) and elevation (meters) of your Defli ground station"
-# read -p "Latitude:  " latitude
-# read -p "Longitude: " longitude
-# read -p "Enter Elevation (m): " elevation 
-# echo
-# echo "Go to defli-wallet.com to find your unique Ground Station information:"
-# read -p "Enter Your Ground Station Bucket ID: " bucket
+echo "Find your time zone (Country/Region) on this website: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
+read -p "Time Zone (ie America/New_York):  " timeZone
+echo
+echo "Enter the geogrphical coordinates (decimal) and elevation (meters) of your Defli ground station"
+read -p "Latitude:  " latitude
+read -p "Longitude: " longitude
+read -p "Enter Elevation (m): " elevation 
+echo
+echo "Go to defli-wallet.com to find your unique Ground Station information:"
+read -p "Enter Your Ground Station Bucket ID: " bucket
 
 
 #REMOVE TEMP TEST
-timeZone="America/New_York"
-latitude="39.9375812"
-longitude="-84.0702247"
-elevation="278"
-bucket="dealcracker"
+# timeZone="America/New_York"
+# latitude="39.0"
+# longitude="-84.0"
+# elevation="280"
+# bucket="dealcracker"
 
 #Make bucket lowercase
 bucket="$(tr [A-Z] [a-z] <<< "$bucket")"
