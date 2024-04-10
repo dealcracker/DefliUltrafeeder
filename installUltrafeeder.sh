@@ -157,7 +157,7 @@ sed -i "s|$original_line4|$new_line4|g" ".etc"
 sed -i "s|$original_line5|$new_line5|g" ".etc"
 
 #start the container
-docker-compose up -d ultrafeeder
+docker-compose up -d --remove-orphans ultrafeeder
 
 #create grafana container
 cd /
