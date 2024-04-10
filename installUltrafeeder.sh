@@ -174,7 +174,7 @@ sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config 
 cd /opt/grafana
 
 rm -f /opt/grafana/docker-compose.yml 
-wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/ultrafeeder-docker-compose.yml 
+wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/grafana-docker-compose.yml 
 mv ultrafeeder-docker-compose.yml /opt/grafana/docker-compose.yml 
 
 docker compose up -d
