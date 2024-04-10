@@ -175,7 +175,7 @@ cd /opt/grafana
 
 rm -f /opt/grafana/docker-compose.yml 
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/grafana-docker-compose.yml 
-mv ultrafeeder-docker-compose.yml /opt/grafana/docker-compose.yml 
+mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml 
 
 docker compose up -d
 
