@@ -115,7 +115,10 @@ echo ""
 echo "Intalling Ultrafeeder..."
 
 #clean up any previous dockers
+docker stop prometheus
+docker stop ultrafeeder
 docker rm ultrafeeder
+docker rm prometheus
 rm -fr /opt
 
 #new opt directory
