@@ -1,0 +1,68 @@
+version: '3.9'
+
+volumes:
+  grafana:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/opt/grafana/grafana/appdata"
+      o: bind
+  prom-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/opt/grafana/prometheus/config"
+      o: bind
+  prom-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/opt/grafana/prometheus/data"
+      o: bind
+
+services:
+  grafana:
+    image: grafana/grafana-oss:latest
+    restart: unless-stopped
+    container_name: grafana
+    hostname: grafana
+    tty: true
+    # uncomment the following section and set the variables if you are exposing Grafana to the internet behind a rev web proxy:
+    environment:
+    # windrose panel plugin is needed for polar plots:
+      - GF_INSTALL_PLUGINS=snuids-radar-panel,fatcloud-windrose-panel
+    # uncomment and set the following variables if you are exposing Grafana to the internet behind a rev web proxy:
+    #  - GF_SERVER_ROOT_URL=https://mywebsite.com/grafana/
+    #  - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    # The following variables are needed if you want to expose and embed any dashboards publicly:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=public
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    # The following variables will allow you to "share/render" dashboards as PNG graphics.
+    # You should also enabled the renderer container below.
+      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_LOG_FILTERS=rendering:debug
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana:/var/lib/grafana
+
+# The `renderer` container is needed if you want to share images of your dashboard as a graphic:
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    tmpfs:
+      - /tmp
+    volumes:
+      - prom-config:/etc/prometheus
+      - prom-data:/prometheus
+    ports:
+      - 9090:9090

@@ -1,0 +1,65 @@
+services:
+  ultrafeeder:
+    image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:telegraf
+    tty: true
+    container_name: ultrafeeder
+    hostname: ultrafeeder
+    restart: unless-stopped
+    device_cgroup_rules:
+      - "c 189:* rwm"
+    ports:
+      - 8080:80 # to expose the web interface
+      - 9273-9274:9273-9274 # to expose the statistics interface to Prometheus
+    environment:
+      # --------------------------------------------------
+      # general parameters:
+      - LOGLEVEL=error
+      - TZ=GS_TIMEZONE # enter your timezone using https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      # --------------------------------------------------
+      # SDR related parameters:
+      - READSB_DEVICE_TYPE=rtlsdr
+      #
+      # --------------------------------------------------
+      # readsb/decoder parameters:
+      - READSB_LAT=GS_LATITUDE # enter your latitude
+      - READSB_LON=GS_LONGITUDE # enter your longitude
+      - READSB_ALT=GS_ELEVATION # enter your elevation
+      - READSB_GAIN=autogain
+      - READSB_RX_LOCATION_ACCURACY=2
+      - READSB_STATS_RANGE=true
+      #
+      # --------------------------------------------------
+      # TAR1090 (Map Web Page) parameters:
+      - UPDATE_TAR1090=true
+      - TAR1090_DEFAULTCENTERLAT=GS_LATITUDE # enter your latitude
+      - TAR1090_DEFAULTCENTERLON=GS_LONGITUDE # enter your longitude
+      - TAR1090_MESSAGERATEINTITLE=true
+      - TAR1090_PAGETITLE=My_DeFli_Feeder
+      - TAR1090_PLANECOUNTINTITLE=true
+      - TAR1090_ENABLE_AC_DB=true
+      - TAR1090_FLIGHTAWARELINKS=false
+      - TAR1090_SITESHOW=true
+      - TAR1090_RANGE_OUTLINE_COLORED_BY_ALTITUDE=true
+      - TAR1090_RANGE_OUTLINE_WIDTH=2.0
+      - TAR1090_RANGERINGSDISTANCES=50,100,150,200
+      - TAR1090_RANGERINGSCOLORS='#1A237E','#0D47A1','#42A5F5','#64B5F6'
+      - TAR1090_USEROUTEAPI=true
+      #
+      # --------------------------------------------------
+      # GRAPHS1090 (Decoder and System Status Web Page) parameters:
+      # The two 978 related parameters should only be included if you are running dump978 for UAT reception (USA only)
+      - GRAPHS1090_DARKMODE=true
+      #
+      # --------------------------------------------------
+      # Prometheus and InfluxDB connection parameters:
+      - PROMETHEUS_ENABLE=true
+      - PROMETHEUSPORT=9273
+    volumes:
+      - /opt/adsb/ultrafeeder/globe_history:/var/globe_history
+      - /opt/adsb/ultrafeeder/graphs1090:/var/lib/collectd
+      - /proc/diskstats:/proc/diskstats:ro
+      - /dev:/dev:ro
+    tmpfs:
+      - /run:exec,size=256M
+      - /tmp:size=128M
+      - /var/log:size=32M
