@@ -126,7 +126,7 @@ mv ultrafeeder-docker-compose.yml /opt/adsb/docker-compose.yml
 #get the default .env file
 rm -f /opt/adsb/.env
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/env.txt 
-mv env.text /opt/adsb/.env
+mv env.txt /opt/adsb/.env
 
 # updated the coordinates and IP in defaultFlows.json
 original_line1="GS_LATITUDE"
