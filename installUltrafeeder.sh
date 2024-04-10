@@ -115,14 +115,14 @@ echo ""
 echo "Intalling Ultrafeeder..."
 
 #clean up any previous dockers
-docker stop prometheus
-docker stop ultrafeeder
-docker stop grafana
-docker rm ultrafeeder
-docker rm prometheus
-docker rm grafana
-docker container prune -f
-rm -fr /opt
+docker stop prometheus > /dev/null 2>&1
+docker stop ultrafeeder > /dev/null 2>&1
+docker stop grafana > /dev/null 2>&1
+docker rm ultrafeeder > /dev/null 2>&1
+docker rm prometheus > /dev/null 2>&1
+docker rm grafana > /dev/null 2>&1
+docker container prune -f > /dev/null 2>&1
+rm -fr /opt > /dev/null 2>&1
 
 #new opt directory
 mkdir -p -m 777 /opt/adsb
@@ -157,7 +157,6 @@ new_line5=$elevation
 sed -i "s|$original_line1|$new_line1|g" "docker-compose.yml"
 sed -i "s|$original_line2|$new_line2|g" "docker-compose.yml"
 sed -i "s|$original_line3|$new_line3|g" "docker-compose.yml"
-sed -i "s|$original_line4|$new_line4|g" "docker-compose.yml"
 sed -i "s|$original_line5|$new_line5|g" "docker-compose.yml"
 
 sed -i "s|$original_line1|$new_line1|g" ".env"
@@ -167,7 +166,7 @@ sed -i "s|$original_line4|$new_line4|g" ".env"
 sed -i "s|$original_line5|$new_line5|g" ".env"
 
 #start the container
-docker-compose up -d --remove-orphans ultrafeeder
+docker compose up -d ultrafeeder
 
 #create grafana container
 cd /
@@ -185,6 +184,7 @@ docker exec -it prometheus sh -c "echo -e \"  - job_name: 'ultrafeeder'\n    sta
 docker stop prometheus
 docker compose up -d
 
+echo
 echo "Now navigate to:"
 echo "http://you-ip-address:3000/ this is your personal grafana console username:admin password:admin"
 echo "Click "add your first data source" Click \"prometheus\""
