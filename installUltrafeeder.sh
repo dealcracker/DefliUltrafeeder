@@ -44,9 +44,9 @@ read -p "Latitude:  " latitude
 read -p "Longitude: " longitude
 read -p "Enter Elevation (m): " elevation 
 echo
-echo "Go to defli-wallet.com to find your unique Ground Station information:"
+echo "Go to defli-wallet.com to find your unique Ground Station Bucket ID"
 read -p "Enter Your Ground Station Bucket ID: " bucket
-
+echo
 
 #REMOVE TEMP TEST
 # timeZone="America/New_York"
@@ -77,32 +77,22 @@ if (( $(echo "$Longitude < -180.0" | bc -l) )) && (( $(echo "$Longitude > 180.0"
   exit 1
 fi
 
+echo
 echo "============ Utrafeeder ==============="
 echo "Installing the Utrafeeder connector for Defli" 
 
 #test if localhost is reachable
   echo "Determining local IP address..."
-  ping -c 3 localhost > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    ip_address="localhost"
-    echo "Using localhost instead of fixed IP address"
+  # get the eth0 ip address
+  ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
+  #Check if eth0 is up and has an IP address
+  if [ -n "$ip_address" ]; then
+    echo "Using wired ethernet IP address: $ip_address"
   else
-    # get the eth0 ip address
-    ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-    #Check if eth0 is up and has an IP address
+    # Get the IP address of the Wi-Fi interface using ip command
+    ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
     if [ -n "$ip_address" ]; then
-      echo "Using wired ethernet IP address: $ip_address"
-    else
-      # Get the IP address of the Wi-Fi interface using ip command
-      ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-      if [ -n "$ip_address" ]; then
-        echo "Using wifi IP address: $ip_address"
-      else
-        echo "Unable to determine your device IP address"
-        echo "No IP address. Installation Failed."
-        exit 1
-      fi
-    fi
+      echo "Using wifi IP address: $ip_address"
   fi
 
 # Update the package list
@@ -111,7 +101,7 @@ echo "Updating package list..."
 apt-get -qq update -y
 
 echo ""
-echo "Intalling Ultrafeeder..."
+echo "Removing any existing dockers..."
 
 #clean up any previous dockers
 docker stop prometheus > /dev/null 2>&1
@@ -122,6 +112,9 @@ docker rm prometheus > /dev/null 2>&1
 docker rm grafana > /dev/null 2>&1
 docker container prune -f > /dev/null 2>&1
 rm -fr /opt > /dev/null 2>&1
+
+echo ""
+echo "Intalling Ultrafeeder..."
 
 #new opt directory
 mkdir -p -m 777 /opt/adsb
@@ -187,10 +180,10 @@ docker compose up -d
 
 #get the ultrafeeder container IP
 original_line8="GS_ULTRAFEEDER_IP"
-new_line8=docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ultrafeeder
+new_line8=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ultrafeeder)
 
 echo "Ultrafeeder container IP:"
-echo new_line8
+echo $new_line8
 
 #prepare promethius.yml
 cd /opt/grafana/prometheus/config/
@@ -210,7 +203,7 @@ echo
 echo "***** Installation Script Complete *****"
 echo
 echo "Now navigate to:"
-echo "http://you-ip-address:3000/ this is your personal grafana console username:admin password:admin"
+echo "http://localhost:3000/ this is your personal grafana console username:admin password:admin"
 echo "Click "add your first data source" Click \"prometheus\""
 echo "Under name enter- ultrafeeder Under URL enter- http://prometheus:9090/ or http://your-ip-address:9090/"
 echo "Click save and test"
@@ -227,4 +220,5 @@ echo "http://localhost:8080/graphs1090/"
 echo "http://localhost:9273/metrics/"
 echo "http://localhost:9090/"
 echo
-echo "Note that if your browser is on a different machine, change 'localhost' to the device IP. 
+echo "Note that if your browser is on a different machine, change 'localhost' to the device IP:"
+echo $ip_address
