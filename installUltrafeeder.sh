@@ -9,13 +9,12 @@ if ! [[ $EUID = 0 ]]; then
     exit 1
 fi
 
-#Check and remove readsb
-if [ ! -e "/etc/default/readsb" ]; then
-    #stop and remove readsb service
-    systemctl stop readsb > /dev/null 2>&1
-    systemctl disable readsb > /dev/null 2>&1
-    rm -f /lib/systemd/system/readsb.service > /dev/null 2>&1
-fi
+#stop and remove readsb service
+systemctl stop readsb > /dev/null 2>&1
+systemctl disable readsb > /dev/null 2>&1
+rm -f /lib/systemd/system/readsb.service > /dev/null 2>&1
+systemctl daemon-reload > /dev/null 2>&1
+systemctl reset-failed > /dev/null 2>&1
 
 #change to user's home dir
 user_dir=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
