@@ -83,6 +83,7 @@ echo "Installing the Utrafeeder connector for Defli"
 
 #test if localhost is reachable
   echo "Determining local IP address..."
+  
   # get the eth0 ip address
   ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
   #Check if eth0 is up and has an IP address
@@ -93,6 +94,9 @@ echo "Installing the Utrafeeder connector for Defli"
     ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
     if [ -n "$ip_address" ]; then
       echo "Using wifi IP address: $ip_address"
+    else
+      ip_address=""
+    fi
   fi
 
 # Update the package list
@@ -182,8 +186,7 @@ docker compose up -d
 original_line8="GS_ULTRAFEEDER_IP"
 new_line8=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ultrafeeder)
 
-echo "Ultrafeeder container IP:"
-echo $new_line8
+echo "Ultrafeeder container IP: $new_line8"
 
 #prepare promethius.yml
 cd /opt/grafana/prometheus/config/
@@ -220,5 +223,5 @@ echo "http://localhost:8080/graphs1090/"
 echo "http://localhost:9273/metrics/"
 echo "http://localhost:9090/"
 echo
-echo "Note that if your browser is on a different machine, change 'localhost' to the device IP:"
-echo $ip_address
+echo "Note that if your browser is on a different machine, change 'localhost' to the device IP: $ip_address"
+echo
