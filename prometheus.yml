@@ -12,7 +12,7 @@
 scrape_configs:
   - job_name: "GS_BUCKET"
   static_configs:
-    - targets: ["172.17.0.1:9273", "172.17.0.1:9274"]
+    - targets: ["GS_ULTRAFEEDER_IP:9273", "GS_ULTRAFEEDER_IP:9274"]
 
   - job_name: "prometheus"
   static_configs: 

@@ -35,7 +35,6 @@ rm -fr /root/.node-red > /dev/null 2>&1
 rm -fr $current_dir/.node-red > /dev/null 2>&1
 
 
-
 #Prompt user for the Ground Station information
 echo "Find your time zone (Country/Region) on this website: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
 read -p "Time Zone (ie America/New_York):  " timeZone
@@ -160,7 +159,6 @@ new_line6="password"
 original_line7="GS_PWORD"
 new_line7="glc_eyJvIjoiMTA4MjgwNiIsIm4iOiJzdGFjay04ODc4MjAtaG0tcmVhZC1kZWZsaS1kb2NrZXIiLCJrIjoiN2NXNjJpMDkyTmpZUWljSDkwT3NOMDh1IiwibSI6eyJyIjoicHJvZC11cy1lYXN0LTAifX0="
 
-
 sed -i "s|$original_line1|$new_line1|g" "docker-compose.yml"
 sed -i "s|$original_line2|$new_line2|g" "docker-compose.yml"
 sed -i "s|$original_line3|$new_line3|g" "docker-compose.yml"
@@ -172,7 +170,7 @@ sed -i "s|$original_line3|$new_line3|g" ".env"
 sed -i "s|$original_line4|$new_line4|g" ".env"
 sed -i "s|$original_line5|$new_line5|g" ".env"
 
-#start the container
+#compose the ultrafeeder container
 docker compose up -d ultrafeeder
 
 #create grafana container
@@ -180,11 +178,19 @@ cd /
 sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config /opt/grafana/prometheus/data
 cd /opt/grafana
 
+#get the grafana compose yml file
 rm -f /opt/grafana/docker-compose.yml 
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/grafana-docker-compose.yml 
 mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml 
 
 docker compose up -d
+
+#get the ultrafeeder container IP
+original_line8="GS_ULTRAFEEDER_IP"
+new_line8=docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ultrafeeder
+
+echo "Ultrafeeder container IP:"
+echo new_line8
 
 #prepare promethius.yml
 cd /opt/grafana/prometheus/config/
@@ -194,6 +200,7 @@ wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/prome
 sed -i "s|$original_line4|$new_line4|g" "prometheus.yml"
 sed -i "s|$original_line6|$new_line6|g" "prometheus.yml"
 sed -i "s|$original_line7|$new_line7|g" "prometheus.yml"
+sed -i "s|$original_line8|$new_line8|g" "prometheus.yml"
 
 #stop prometheus and re compose
 docker stop prometheus
