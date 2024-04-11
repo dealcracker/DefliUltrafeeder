@@ -1,0 +1,25 @@
+# my global config
+  global:
+    scrape_interval: 10s
+    evaluation_interval: 10s
+ # Alertmanager configuration
+ alerting:
+   alertmanagers:
+     - static_configs:
+         - targets:
+           # - alertmanager:9093
+
+scrape_configs:
+  - job_name: "GS_BUCKET"
+  static_configs:
+    - targets: ["172.17.0.1:9273", "172.17.0.1:9274"]
+
+  - job_name: "prometheus"
+  static_configs: 
+    - targets: ["localhost:9090"]
+
+  remote_write:
+  - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
+    basic_auth:
+      username: 1488847
+      GS_PFIELD: GS_PWORD
