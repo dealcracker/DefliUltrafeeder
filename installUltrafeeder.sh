@@ -154,6 +154,13 @@ new_line4=$bucket
 original_line5="GS_ELEVATION"
 new_line5=$elevation
 
+original_line6="GS_PFIELD"
+new_line6="password"
+
+original_line7="GS_PWORD"
+new_line7="glc_eyJvIjoiMTA4MjgwNiIsIm4iOiJzdGFjay04ODc4MjAtaG0tcmVhZC1kZWZsaS1kb2NrZXIiLCJrIjoiN2NXNjJpMDkyTmpZUWljSDkwT3NOMDh1IiwibSI6eyJyIjoicHJvZC11cy1lYXN0LTAifX0="
+
+
 sed -i "s|$original_line1|$new_line1|g" "docker-compose.yml"
 sed -i "s|$original_line2|$new_line2|g" "docker-compose.yml"
 sed -i "s|$original_line3|$new_line3|g" "docker-compose.yml"
@@ -179,15 +186,38 @@ mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml
 
 docker compose up -d
 
-docker exec -it prometheus sh -c "echo -e \"  - job_name: 'ultrafeeder'\n    static_configs:\n      - targets: ['0.0.0.0:9273', '0.0.0.0:9274']\" >> /etc/prometheus/prometheus.yml"
+#prepare promethius.yml
+cd /opt/grafana/prometheus/config/
+rm -f //opt/grafana/prometheus/config/prometheus.yml
+wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/prometheus.yml
 
+sed -i "s|$original_line4|$new_line4|g" "prometheus.yml"
+sed -i "s|$original_line6|$new_line6|g" "prometheus.yml"
+sed -i "s|$original_line7|$new_line7|g" "prometheus.yml"
+
+#stop prometheus and re compose
 docker stop prometheus
 docker compose up -d
 
 echo
+echo "***** Installation Script Complete *****"
+echo
 echo "Now navigate to:"
 echo "http://you-ip-address:3000/ this is your personal grafana console username:admin password:admin"
 echo "Click "add your first data source" Click \"prometheus\""
-
-
-
+echo "Under name enter- ultrafeeder Under URL enter- http://prometheus:9090/ or http://your-ip-address:9090/"
+echo "Click save and test"
+echo 
+echo "If you get the green message you can click 'build dashboard'"
+echo "In the box with title 'import via grafana.com' enter 18398 and press load"
+echo "Select 'ultrafeeder' from the dropdown list"
+echo "Click import"
+echo "Your dashboard will populate"
+echo
+echo "If all is working you should see outputs here:"
+echo "http://localhost:8080/ "
+echo "http://localhost:8080/graphs1090/"
+echo "http://localhost:9273/metrics/"
+echo "http://localhost:9090/"
+echo
+echo "Note that if your browser is on a different machine, change 'localhost' to the device IP. 
