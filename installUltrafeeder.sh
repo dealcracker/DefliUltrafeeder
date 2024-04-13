@@ -119,6 +119,8 @@ rm -fr /opt > /dev/null 2>&1
 echo ""
 echo "Intalling Ultrafeeder..."
 
+docker network create -d bridge grafana_default
+
 #new opt directory
 mkdir -p -m 777 /opt/adsb
 cd /opt/adsb
