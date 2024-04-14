@@ -10,13 +10,14 @@
            # - alertmanager:9093
 
 scrape_configs:
-  - job_name: "GS_BUCKET"
-  static_configs:
-    - targets: ["GS_ULTRAFEEDER_IP:9273", "GS_ULTRAFEEDER_IP:9274"]
 
   - job_name: "prometheus"
   static_configs:
     - targets: ["localhost:9090"]
+
+  - job_name: 'ultrafeeder'
+  static_configs:
+    - targets: ["GS_BRIDGE_IP:9273", "GS_BRIDGE_IP:9274"]
 
   remote_write:
   - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push

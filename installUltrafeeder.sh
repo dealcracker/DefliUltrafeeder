@@ -119,8 +119,6 @@ rm -fr /opt > /dev/null 2>&1
 echo ""
 echo "Intalling Ultrafeeder..."
 
-docker network create -d bridge grafana_default
-
 #new opt directory
 mkdir -p -m 777 /opt/adsb
 cd /opt/adsb
@@ -184,8 +182,8 @@ mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml
 docker compose up -d
 
 #get the ultrafeeder container IP
-original_line8="GS_ULTRAFEEDER_IP"
-new_line8=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ultrafeeder)
+original_line8="GS_BRIDGE_IP"
+new_line8=$(docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}')
 
 echo "Ultrafeeder container IP: $new_line8"
 
