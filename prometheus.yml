@@ -15,7 +15,7 @@ scrape_configs:
   static_configs:
     - targets: ["localhost:9090"]
 
-  - job_name: 'ultrafeeder'
+  - job_name: "ultrafeeder"
   static_configs:
     - targets: ["GS_BRIDGE_IP:9273", "GS_BRIDGE_IP:9274"]
 
