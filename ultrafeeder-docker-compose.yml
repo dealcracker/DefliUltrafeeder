@@ -63,8 +63,3 @@ services:
       - /run:exec,size=256M
       - /tmp:size=128M
       - /var/log:size=32M
-    networks:
-      - grafana_default
-networks:
-  grafana_default:
-  
