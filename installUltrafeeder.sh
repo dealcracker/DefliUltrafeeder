@@ -110,9 +110,11 @@ echo "Removing any existing dockers..."
 docker stop prometheus > /dev/null 2>&1
 docker stop ultrafeeder > /dev/null 2>&1
 docker stop grafana > /dev/null 2>&1
+docker stop grafana-renderer-1  > /dev/null 2>&1
 docker rm ultrafeeder > /dev/null 2>&1
 docker rm prometheus > /dev/null 2>&1
 docker rm grafana > /dev/null 2>&1
+docker rm grafana-renderer-1  > /dev/null 2>&1
 docker container prune -f > /dev/null 2>&1
 rm -fr /opt > /dev/null 2>&1
 
