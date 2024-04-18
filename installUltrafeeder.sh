@@ -33,7 +33,6 @@ rm -f /lib/systemd/system/nodered.service > /dev/null 2>&1
 rm -fr /root/.node-red > /dev/null 2>&1
 rm -fr $current_dir/.node-red > /dev/null 2>&1
 
-
 #Prompt user for the Ground Station information
 echo "Find your time zone (Country/Region) on this website: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
 read -p "Time Zone (ie America/New_York):  " timeZone
@@ -46,13 +45,6 @@ echo
 echo "Go to defli-wallet.com to find your unique Ground Station Bucket ID"
 read -p "Enter Your Ground Station Bucket ID: " bucket
 echo
-
-#REMOVE TEMP TEST
-# timeZone="America/New_York"
-# latitude="39.0"
-# longitude="-84.0"
-# elevation="280"
-# bucket="dealcracker"
 
 #Make bucket lowercase
 bucket="$(tr [A-Z] [a-z] <<< "$bucket")"
@@ -85,31 +77,15 @@ echo ""
 echo "Updating package list..."
 apt-get -qq update -y
 
-#test if localhost is reachable
+#Get local IP
   echo "Determining local IP address..."
-  
-  # # get the eth0 ip address
-  # ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-  # #Check if eth0 is up and has an IP address
-  # if [ -n "$ip_address" ]; then
-  #   echo "Using wired ethernet IP address: $ip_address"
-  # else
-  #   # Get the IP address of the Wi-Fi interface using ip command
-  #   ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-  #   if [ -n "$ip_address" ]; then
-  #     echo "Using wifi IP address: $ip_address"
-  #   else
-  #     ip_address=""
-  #   fi
-  # fi
-
 ip_address=$(ip route get 8.8.8.8 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}') 
-
 echo
 echo "Using local IP address: $ip_address"
+
+#remove any previous dockers
 echo ""
 echo "Removing any existing dockers..."
-
 #clean up any previous dockers
 docker stop prometheus > /dev/null 2>&1
 docker stop ultrafeeder > /dev/null 2>&1
@@ -139,7 +115,7 @@ rm -f /opt/adsb/.env
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/env.txt 
 mv env.txt /opt/adsb/.env
 
-# updated the coordinates and IP in defaultFlows.json
+# prepare replacement values for key text
 key_lat="GS_LATITUDE"
 new_lat=$latitude
 
@@ -164,12 +140,13 @@ new_pword="glc_eyJvIjoiMTA4MjgwNiIsIm4iOiJzdGFjay04ODc4MjAtaG0tcmVhZC1kZWZsaS1kb
 key_ip_addr="LAN_IP"
 new_ip_addr=$ip_address
 
+#update the env file
 sed -i "s|$key_lat|$new_lat|g" ".env"
 sed -i "s|$key_lon|$new_lon|g" ".env"
 sed -i "s|$key_tz|$new_tz|g" ".env"
 sed -i "s|$key_elev|$new_elev|g" ".env"
 
-#compose the ultrafeeder container
+#compose ultrafeeder
 docker compose up -d
 
 #create grafana container
@@ -182,6 +159,7 @@ rm -f /opt/grafana/docker-compose.yml
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/grafana-docker-compose.yml 
 mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml 
 
+#compose grafana 
 docker compose up -d
 
 #prepare promethius.yml
@@ -194,19 +172,22 @@ sed -i "s|$key_bucket|$new_bucket|g" "prometheus.yml"
 sed -i "s|$key_pfield|$new_pfield|g" "prometheus.yml"
 sed -i "s|$key_pword|$new_pword|g" "prometheus.yml"
 
-#stop prometheus and re compose
+#stop prometheus and compose prometheus
 docker stop prometheus
 docker compose up -d
 
 echo
-echo "***** Installation Script Complete *****"
+echo "*********** Installation Script Complete ***********"
 echo
-echo "Now navigate to:"
-echo "http://localhost:3000/ this is your personal grafana console username:admin password:admin"
+echo "Navigate to:"
+echo "http://$ip_address:3000/ this is your personal grafana console username:admin password:admin"
+echo
+echo "Data Source"
 echo "Click "add your first data source" Click \"prometheus\""
-echo "Under name enter- ultrafeeder Under URL enter- http://prometheus:9090/ or http://your-ip-address:9090/"
+echo "Under name enter- ultrafeeder Under URL enter- http://$ip_address:9090/"
 echo "Click save and test"
 echo 
+echo "Dashboard"
 echo "If you get the green message you can click 'build dashboard'"
 echo "In the box with title 'import via grafana.com' enter 18398 and press load"
 echo "Select 'ultrafeeder' from the dropdown list"
@@ -214,11 +195,9 @@ echo "Click import"
 echo "Your dashboard will populate"
 echo
 echo "If all is working you should see outputs here:"
-echo "http://localhost:8080/ "
-echo "http://localhost:8080/graphs1090/"
-echo "http://localhost:9273/metrics/"
-echo "http://localhost:9090/"
+echo "http://localhost:8080/              Tar1090 Map"
+echo "http://localhost:8080/graphs1090/   Graphs1090 Graph"
+echo "http://localhost:9273/metrics/      Ultrafeeder Metrics"
 echo
-echo "Note that if your browser is on a different machine, change 'localhost' to the device IP: $ip_address"
-echo
+
 
