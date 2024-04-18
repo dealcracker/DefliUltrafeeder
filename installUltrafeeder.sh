@@ -170,7 +170,7 @@ docker compose up -d
 
 #create grafana container
 cd /
-sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config
+sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config /opt/grafana/prometheus/data
 cd /opt/grafana
 
 #get the grafana compose yml file
