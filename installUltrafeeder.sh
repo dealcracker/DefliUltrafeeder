@@ -103,7 +103,7 @@ apt-get -qq update -y
   #   fi
   # fi
 
-ip_address = $(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p') 
+ip_address=$(ip route get 8.8.8.8 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}') 
 echo
 echo "Using IP address: $ip_address"
 echo ""
