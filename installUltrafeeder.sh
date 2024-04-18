@@ -80,29 +80,36 @@ echo
 echo "============ Utrafeeder ==============="
 echo "Installing the Utrafeeder connector for Defli" 
 
-#test if localhost is reachable
-  echo "Determining local IP address..."
-  
-  # get the eth0 ip address
-  ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-  #Check if eth0 is up and has an IP address
-  if [ -n "$ip_address" ]; then
-    echo "Using wired ethernet IP address: $ip_address"
-  else
-    # Get the IP address of the Wi-Fi interface using ip command
-    ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
-    if [ -n "$ip_address" ]; then
-      echo "Using wifi IP address: $ip_address"
-    else
-      ip_address=""
-    fi
-  fi
-
 # Update the package list
 echo ""
 echo "Updating package list..."
 apt-get -qq update -y
 
+echo ""
+echo "Install Net-Tools..."
+apt-get install net-tools
+
+#test if localhost is reachable
+  echo "Determining local IP address..."
+  
+  # # get the eth0 ip address
+  # ip_address=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1)
+  # #Check if eth0 is up and has an IP address
+  # if [ -n "$ip_address" ]; then
+  #   echo "Using wired ethernet IP address: $ip_address"
+  # else
+  #   # Get the IP address of the Wi-Fi interface using ip command
+  #   ip_address=$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1)
+  #   if [ -n "$ip_address" ]; then
+  #     echo "Using wifi IP address: $ip_address"
+  #   else
+  #     ip_address=""
+  #   fi
+  # fi
+
+ip_address = $(getMyIP) 
+echo
+echo "Using device IP address: $ip_address"
 echo ""
 echo "Removing any existing dockers..."
 
@@ -217,3 +224,15 @@ echo "http://localhost:9090/"
 echo
 echo "Note that if your browser is on a different machine, change 'localhost' to the device IP: $ip_address"
 echo
+
+#function to determine device IP
+#
+function getMyIP() {
+    local _ip _myip _line _nl=$'\n'
+    while IFS=$': \t' read -a _line ;do
+        [ -z "${_line%inet}" ] &&
+           _ip=${_line[${#_line[1]}>4?1:2]} &&
+           [ "${_ip#127.0.0.1}" ] && _myip=$_ip
+      done< <(LANG=C /sbin/ifconfig)
+    printf ${1+-v} $1 "%s${_nl:0:$[${#1}>0?0:1]}" $_myip
+}
