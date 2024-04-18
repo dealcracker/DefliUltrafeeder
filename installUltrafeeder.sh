@@ -136,44 +136,41 @@ wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/env.t
 mv env.txt /opt/adsb/.env
 
 # updated the coordinates and IP in defaultFlows.json
-original_line1="GS_LATITUDE"
-new_line1=$latitude
+key_lat="GS_LATITUDE"
+new_lat=$latitude
 
-original_line2="GS_LONGITUDE"
-new_line2=$longitude
+key_lon="GS_LONGITUDE"
+new_lon=$longitude
 
-original_line3="GS_TIMEZONE"
-new_line3=$timeZone
+key_tz="GS_TIMEZONE"
+new_tz=$timeZone
 
-original_line4="GS_BUCKET"
-new_line4=$bucket
+key_bucket="GS_BUCKET"
+new_bucket=$bucket
 
-original_line5="GS_ELEVATION"
-new_line5=$elevation
+key_elev="GS_ELEVATION"
+new_elev=$elevation
 
-original_line6="GS_PFIELD"
-new_line6="password"
+key_pfield="GS_PFIELD"
+new_pfield="password"
 
-original_line7="GS_PWORD"
-new_line7="glc_eyJvIjoiMTA4MjgwNiIsIm4iOiJzdGFjay04ODc4MjAtaG0tcmVhZC1kZWZsaS1kb2NrZXIiLCJrIjoiN2NXNjJpMDkyTmpZUWljSDkwT3NOMDh1IiwibSI6eyJyIjoicHJvZC11cy1lYXN0LTAifX0="
+key_pword="GS_PWORD"
+new_pword="glc_eyJvIjoiMTA4MjgwNiIsIm4iOiJzdGFjay04ODc4MjAtaG0tcmVhZC1kZWZsaS1kb2NrZXIiLCJrIjoiN2NXNjJpMDkyTmpZUWljSDkwT3NOMDh1IiwibSI6eyJyIjoicHJvZC11cy1lYXN0LTAifX0="
 
-sed -i "s|$original_line1|$new_line1|g" "docker-compose.yml"
-sed -i "s|$original_line2|$new_line2|g" "docker-compose.yml"
-sed -i "s|$original_line3|$new_line3|g" "docker-compose.yml"
-sed -i "s|$original_line5|$new_line5|g" "docker-compose.yml"
+key_ip_addr="LAN_IP"
+new_ip_addr=$ip_address
 
-sed -i "s|$original_line1|$new_line1|g" ".env"
-sed -i "s|$original_line2|$new_line2|g" ".env"
-sed -i "s|$original_line3|$new_line3|g" ".env"
-sed -i "s|$original_line4|$new_line4|g" ".env"
-sed -i "s|$original_line5|$new_line5|g" ".env"
+sed -i "s|$key_lat|$new_lat|g" ".env"
+sed -i "s|$key_lon|$new_lon|g" ".env"
+sed -i "s|$key_tz|$new_tz|g" ".env"
+sed -i "s|$key_elev|$new_elev|g" ".env"
 
 #compose the ultrafeeder container
-docker compose up -d ultrafeeder
+docker compose up -d
 
 #create grafana container
 cd /
-sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config /opt/grafana/prometheus/data
+sudo mkdir -p -m777 /opt/grafana/grafana/appdata /opt/grafana/prometheus/config
 cd /opt/grafana
 
 #get the grafana compose yml file
@@ -183,21 +180,15 @@ mv grafana-docker-compose.yml /opt/grafana/docker-compose.yml
 
 docker compose up -d
 
-#get the ultrafeeder container IP
-original_line8="GS_BRIDGE_IP"
-new_line8=$(docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}')
-
-echo "Ultrafeeder container IP: $new_line8"
-
 #prepare promethius.yml
 cd /opt/grafana/prometheus/config/
 rm -f //opt/grafana/prometheus/config/prometheus.yml
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/prometheus.yml
 
-sed -i "s|$original_line4|$new_line4|g" "prometheus.yml"
-sed -i "s|$original_line6|$new_line6|g" "prometheus.yml"
-sed -i "s|$original_line7|$new_line7|g" "prometheus.yml"
-sed -i "s|$original_line8|$new_line8|g" "prometheus.yml"
+sed -i "s|$key_ip_addr|$new_ip_addr|g" "prometheus.yml"
+sed -i "s|$key_bucket|$new_bucket|g" "prometheus.yml"
+sed -i "s|$key_pfield|$new_pfield|g" "prometheus.yml"
+sed -i "s|$key_pword|$new_pword|g" "prometheus.yml"
 
 #stop prometheus and re compose
 docker stop prometheus
