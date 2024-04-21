@@ -22,4 +22,4 @@ sudo bash -c "$(wget -O - https://raw.githubusercontent.com/dealcracker/DefliUlt
 
 Follow the direction at the end to setup grafana.
 
-A special thanks to @crey for helping to research, develope, and test the installation procedure and files used in the script!
+A special thanks to @crey for helping to research, develop, and test the installation procedure and files used in the script!
