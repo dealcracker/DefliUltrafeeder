@@ -31,17 +31,11 @@ scrape_configs:
     static_configs:
       - targets: ['LAN_IP:9273', 'LAN_IP:9274']
 
-#remote_write:
-#  - name: GS_BUCKET
-#    url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
-#    basic_auth:
-#      username: 1488847
-#      GS_PFIELD: GS_PWORD
-
 remote_write:
-  - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
-    basic_auth:
-      username: 1488847
-      GS_PFIELD: GS_PWORD
-
-
+  - url: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-8252a996-7415-443d-b9c5-08062fd4ed80/api/v1/remote_write
+    sigv4:
+      region: 'us-east-1'
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
