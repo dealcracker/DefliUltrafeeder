@@ -42,8 +42,8 @@ read -p "Latitude:  " latitude
 read -p "Longitude: " longitude
 read -p "Enter Elevation (m): " elevation 
 echo
-echo "Go to defli-wallet.com to find your unique Ground Station Bucket ID"
-read -p "Enter Your Ground Station Bucket ID: " bucket
+echo "Go to https://defli-data.com/ to find your unique Ground Station ID"
+read -p "Enter Your Ground Station ID: " bucket
 echo
 
 #Make bucket lowercase
@@ -51,7 +51,7 @@ bucket="$(tr [A-Z] [a-z] <<< "$bucket")"
 
 #check GS ID length
 if [ "${#bucket}" -lt 3 ]; then
-  echo "Error: Ground Station Bucket ID is too short."
+  echo "Error: Ground Station ID is too short."
   echo "Aborting installation"
   exit 1
 fi
@@ -78,7 +78,7 @@ echo "Updating package list..."
 apt-get -qq update -y
 
 #Get local IP
-  echo "Determining local IP address..."
+echo "Determining local IP address..."
 ip_address=$(ip route get 8.8.8.8 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}') 
 echo
 echo "Using local IP address: $ip_address"
@@ -145,6 +145,7 @@ sed -i "s|$key_lat|$new_lat|g" ".env"
 sed -i "s|$key_lon|$new_lon|g" ".env"
 sed -i "s|$key_tz|$new_tz|g" ".env"
 sed -i "s|$key_elev|$new_elev|g" ".env"
+sed -i "s|$key_bucket|$new_bucket|g" ".env"
 
 #compose ultrafeeder
 docker compose up -d
@@ -168,7 +169,6 @@ rm -f //opt/grafana/prometheus/config/prometheus.yml
 wget https://raw.githubusercontent.com/dealcracker/DefliUltrafeeder/master/prometheus.yml
 
 sed -i "s|$key_ip_addr|$new_ip_addr|g" "prometheus.yml"
-sed -i "s|$key_bucket|$new_bucket|g" "prometheus.yml"
 sed -i "s|$key_pfield|$new_pfield|g" "prometheus.yml"
 sed -i "s|$key_pword|$new_pword|g" "prometheus.yml"
 
@@ -195,9 +195,9 @@ echo "Click import"
 echo "Your dashboard will populate"
 echo
 echo "If all is working you should see outputs here:"
-echo "http://localhost:8080/              Tar1090 Map"
-echo "http://localhost:8080/graphs1090/   Graphs1090 Graph"
-echo "http://localhost:9273/metrics/      Ultrafeeder Metrics"
+echo "http://$ip_address:8080/              Tar1090 Map"
+echo "http://$ip_address:8080/graphs1090/   Graphs1090 Graph"
+echo "http://$ip_address:9273/metrics/      Ultrafeeder Metrics"
 echo
 
 
